@@ -3,6 +3,7 @@ const categoryFilter = document.getElementById("categoryFilter");
 const productsContainer = document.getElementById("productsContainer");
 const chatForm = document.getElementById("chatForm");
 const chatWindow = document.getElementById("chatWindow");
+const selectedItems = [];
 
 /* Show initial placeholder until user selects a category */
 productsContainer.innerHTML = `
@@ -33,6 +34,21 @@ function displayProducts(products) {
   `
     )
     .join("");
+  // Adds event listeners to each product on page
+  const productArray = Array.from(productsContainer.children);
+  productArray.forEach((item) => addEventListener('click', 
+    () => toggleItem(item))
+  );
+}
+
+/* Toggles item in product container */
+function toggleItem(item) {
+  const itemName = item.querySelector('img').alt;
+  if (selectedItems.includes(itemName)) {
+    console.log('Item state has been switched to OFF');
+  } else {
+    console.log('Item state has been switched to ON');
+  }
 }
 
 /* Filter and display products when category changes */
