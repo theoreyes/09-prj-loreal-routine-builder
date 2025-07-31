@@ -37,7 +37,7 @@ function displayProducts(products) {
   // Adds event listeners to each product on page
   const productArray = Array.from(productsContainer.children);
   productArray.forEach((item) => addEventListener('click', 
-    () => toggleItem(item))
+    toggleItem(item))
   );
 }
 
