@@ -186,6 +186,17 @@ body {
   display: flex;
   gap: 15px;
   min-height: 160px;
+  position: relative;
+}
+
+.product-card:hover {
+  flex: 0 1 calc(33.333% - 14px);
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 4px;
+  display: flex;
+  gap: 15px;
+  min-height: 160px;
 }
 
 .product-card img {
@@ -208,11 +219,6 @@ body {
   margin-bottom: 8px;
 }
 
-.product-card p {
-  font-size: 14px;
-  color: #666;
-}
-
 /* selected products */
 .selected-products {
   margin: 40px 0;
@@ -228,6 +234,7 @@ body {
 
 #selectedProductsList {
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
   gap: 10px;
 }
@@ -252,4 +259,54 @@ body {
 
 .generate-btn i {
   margin-right: 8px;
+}
+
+.desc-wrapper {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  position: absolute;
+  padding: 15px;
+  background: rgba(65, 65, 65, 0.8);
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  opacity: 0;
+  transition: 0.1s ease-out;
+}
+
+.desc-wrapper:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.product-description {
+  width: 100%;
+  height: 100%;
+  padding-right: 10px;
+  color: #eaeaea;
+  font-size: 0.9em;
+  text-overflow: ellipsis;
+  text-align: center;
+  overflow: scroll;
+  overflow: overlay;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(216, 216, 216) rgb(166, 166, 166);
+}
+
+.selectedItemContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.removeItemBtn {
+  margin-right: 12px;
+  border: 1px solid black;
+  background: rgb(230, 230, 230);
+  border-radius: 50%;
 }

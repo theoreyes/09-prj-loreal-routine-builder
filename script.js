@@ -26,8 +26,6 @@ async function loadProducts() {
 /* Create HTML for displaying product cards */
 function displayProducts(products) {
   // Wipes existing selectedItems array
-  selectedItems = [];
-
   productsContainer.innerHTML = products
     .map(
       (product) => `
@@ -36,6 +34,9 @@ function displayProducts(products) {
       <div class="product-info">
         <h3>${product.name}</h3>
         <p>${product.brand}</p>
+      </div>
+      <div class="desc-wrapper">
+        <p class="product-description">${product.description}</p>
       </div>
     </div>
   `
@@ -82,12 +83,12 @@ function addToSelectedProducts(itemName) {
   pItem.innerText = itemName;
   const removeItem = document.createElement("p");
   removeItem.classList.add("removeItemBtn");
-  removeItem.innerText = "X";
+  removeItem.innerHTML = "&nbsp;X&nbsp;";
   removeItem.addEventListener("click", () => {
     removeFromSelectedProducts(itemName);
   });
-  itemDiv.appendChild(pItem);
   itemDiv.appendChild(removeItem);
+  itemDiv.appendChild(pItem);
   selectedProdList.appendChild(itemDiv);
 }
 
@@ -134,11 +135,6 @@ async function loadCategoryFromStorage() {
   }
 }
 
-function clearSelectedProducts() {
-  document.getElementById("selectedProductsList").innerHTML = "";
-  localStorage.removeItem("itemList");
-}
-
 function clearAlert() {
   if (document.getElementById("alert-div"))
     document.getElementById("alert-div").remove();
@@ -149,7 +145,7 @@ function displaySelectItemsAlert() {
   alertDiv.id = "alert-div";
   const alertP = document.createElement("p");
   alertP.id = "alert-div";
-  alertP.innerText = "Select at least one item to generate a routine";
+  alertP.innerText = "Please select at least one item to generate a routine";
   alertDiv.appendChild(alertP);
   document
     .getElementById("selected-products-container")
@@ -171,8 +167,6 @@ categoryFilter.addEventListener("change", async (e) => {
     (product) => product.category === selectedCategory
   );
 
-  selectedItems = [];
-  clearSelectedProducts();
   category = selectedCategory;
   saveCategoryToStorage();
   displayProducts(filteredProducts);
@@ -221,7 +215,6 @@ chatForm.addEventListener("submit", async (e) => {
   }
 });
 
-// TODO: Ensure user cant activate this unless at least one item is selected
 generateRoutineBtn.addEventListener("click", async (e) => {
   e.preventDefault();
   if (selectedItems.length === 0) {
