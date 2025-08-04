@@ -75,7 +75,8 @@ body {
   padding: 20px;
   font-size: 18px;
   line-height: 1.5;
-  height: 250px;
+  min-height: 250px;
+  max-height: 500px;
   overflow-y: auto;
   background: #fafafa;
   margin-bottom: 20px;
@@ -302,11 +303,61 @@ body {
 .selectedItemContainer {
   display: flex;
   flex-direction: row;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid black;
+  background: #fff0f0;
+  align-items: center;
 }
 
 .removeItemBtn {
+  font-size: 1.2em;
   margin-right: 12px;
   border: 1px solid black;
-  background: rgb(230, 230, 230);
+  background: rgb(255, 255, 255);
   border-radius: 50%;
+  transition: 0.1s ease-in;
+}
+
+.removeItemBtn:hover {
+  background: rgb(196, 196, 196);
+  cursor: pointer;
+}
+
+.prompt-window {
+  display: flex;
+  justify-content: flex-end;
+  margin-left: 15%;
+  margin-bottom: 2%;
+}
+
+.prompt-text {
+  max-width: 100%;
+  word-wrap: break-word;
+  background: #eabc69;
+  color: #000000;
+  padding: 7px 15px;
+  border-radius: 5px;
+  border: 1px solid #000000;
+}
+
+.reply-window {
+  display: flex;
+  justify-content: flex-start;
+  margin-right: 15%;
+  margin-bottom: 2%;
+}
+
+.reply-text {
+  max-width: 100%;
+  word-wrap: break-word;
+  background: #fbf8f3;
+  padding: 7px 15px;
+  border-radius: 5px;
+  border: 1px solid #757575;
+}
+
+.reply-text ol,
+ul {
+  margin-left: 40px;
 }

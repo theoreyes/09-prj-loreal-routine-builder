@@ -192,29 +192,11 @@ let messages = [
   },
 ];
 
-/* Chat form submission handler - placeholder for OpenAI integration */
-chatForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const userInputElement = document.querySelector("#userInput");
-  let prompt = userInputElement.value.trim();
-  messages.push({ role: "user", content: prompt });
-  userInputElement.value = "";
+/*** Chat-bot functions & event-listeners ***/
 
-  try {
-    const response = await fetch(workerURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: messages }),
-    });
-    if (!response.ok) throw new error(`HTTP Error! status: ${response.status}`);
-    const result = await response.json();
-    console.log(result);
-  } catch (error) {
-    console.error(`ERROR: ${error}`);
-    displayReply("Error occurred! Please try again later");
-  }
-});
+const userInput = document.getElementById("userInput");
 
+// Generate Routine
 generateRoutineBtn.addEventListener("click", async (e) => {
   e.preventDefault();
   if (selectedItems.length === 0) {
@@ -225,6 +207,9 @@ generateRoutineBtn.addEventListener("click", async (e) => {
   } else {
     let prompt = `$$GENERATE ROUTINE$$ ${JSON.stringify(selectedItems)}`;
     messages.push({ role: "user", content: prompt });
+    displayPrompt("Generate me a routine from the items I selected!");
+    displayGeneratingRoutine();
+
     try {
       const response = await fetch(workerURL, {
         method: "POST",
@@ -233,8 +218,14 @@ generateRoutineBtn.addEventListener("click", async (e) => {
       });
       if (!response.ok)
         throw new error(`HTTP Error! status: ${response.status}`);
+
+      // Gets message back, adds to chat history
       const result = await response.json();
-      console.log(result);
+      const outputText = result.choices[0].message.content;
+      messages.push({ role: "assistant", content: outputText });
+
+      removeThinking();
+      displayReply(outputText);
     } catch (error) {
       console.error(`ERROR: ${error}`);
       displayReply("Error occurred! Please try again later");
@@ -242,6 +233,116 @@ generateRoutineBtn.addEventListener("click", async (e) => {
   }
 });
 
+/* Send chat */
+chatForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const userInputElement = document.querySelector("#userInput");
+  let prompt = userInputElement.value.trim();
+  messages.push({ role: "user", content: prompt });
+
+  // Displays prompt at this point, wipes input field
+  displayPrompt(prompt);
+  userInputElement.value = "";
+  displayThinking();
+
+  try {
+    const response = await fetch(workerURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: messages }),
+    });
+    if (!response.ok) throw new error(`HTTP Error! status: ${response.status}`);
+
+    // Gets message back, adds to chat history
+    const result = await response.json();
+    const outputText = result.choices[0].message.content;
+    messages.push({ role: "assistant", content: outputText });
+
+    // Displays response from OpenAI
+    removeThinking();
+    displayReply(outputText);
+  } catch (error) {
+    console.error(`ERROR: ${error}`);
+    displayReply("Error occurred! Please try again later");
+  }
+});
+
+// Auto-scrolls the chat window down when next chat bubbles enter the window
+function scrollUX() {
+  setTimeout(() => {
+    if (!latestPrompt) return;
+
+    const containerTop = chatWindow.getBoundingClientRect().top;
+    const elementTop = latestPrompt.getBoundingClientRect().top;
+
+    const offset = elementTop - containerTop - 6;
+
+    chatWindow.scrollTo({
+      top: chatWindow.scrollTop + offset,
+      behavior: "smooth",
+    });
+  }, 0);
+}
+
+// Displays "Thinking..."
+function displayThinking(isRoutine) {
+  const thinkingDiv = document.createElement("div");
+  const thinkingText = document.createElement("p");
+  thinkingDiv.id = "think-bubble";
+  thinkingDiv.classList.add("reply-window");
+  thinkingText.classList.add("reply-text");
+  thinkingText.textContent = "Thinking...";
+  thinkingDiv.appendChild(thinkingText);
+  chatWindow.appendChild(thinkingDiv);
+  scrollUX();
+}
+
+// Displays "Generating Routine..."
+// Yes, this isn't DRY, but the deliverable is on-time :)
+function displayGeneratingRoutine() {
+  const thinkingDiv = document.createElement("div");
+  const thinkingText = document.createElement("p");
+  thinkingDiv.id = "think-bubble";
+  thinkingDiv.classList.add("reply-window");
+  thinkingText.classList.add("reply-text");
+  thinkingText.textContent = "Generating Routine...";
+  thinkingDiv.appendChild(thinkingText);
+  chatWindow.appendChild(thinkingDiv);
+  scrollUX();
+}
+
+// Removes the "Thinking..." text from chat box
+function removeThinking() {
+  let thinkBubble = document.getElementById("think-bubble").remove();
+  if (thinkBubble) thinkBubble.remove();
+}
+
+// Takes prompt text and displays it inside chat window
+function displayPrompt(text) {
+  const promptDiv = document.createElement("div");
+  latestPrompt = promptDiv;
+  const promptText = document.createElement("p");
+  promptDiv.classList.add("prompt-window");
+  promptText.classList.add("prompt-text");
+  promptText.textContent = text;
+  promptDiv.appendChild(promptText);
+  chatWindow.appendChild(promptDiv);
+  scrollUX();
+}
+
+// Takes reply text from API call and displays it inside chat window
+function displayReply(text) {
+  const replyDiv = document.createElement("div");
+  const replyText = document.createElement("p");
+  replyDiv.classList.add("reply-window");
+  replyText.classList.add("reply-text");
+  replyText.innerHTML = marked.parse(text);
+  replyDiv.appendChild(replyText);
+  chatWindow.appendChild(replyDiv);
+  scrollUX();
+}
+
+// Grabs any previously selected items and/or category
 document.addEventListener("DOMContentLoaded", async () => {
   await loadCategoryFromStorage();
   loadSelectionsFromStorage();
