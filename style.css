@@ -306,7 +306,7 @@ body {
   padding: 10px;
   border-radius: 6px;
   border: 1px solid black;
-  background: #fff0f0;
+  background: #fffbfb;
   align-items: center;
 }
 
@@ -360,4 +360,9 @@ body {
 .reply-text ol,
 ul {
   margin-left: 40px;
+}
+
+.activated {
+  border: 2px solid #ff6363;
+  background-color: #ffd3d3;
 }

@@ -25,6 +25,7 @@ async function loadProducts() {
 
 /* Create HTML for displaying product cards */
 function displayProducts(products) {
+  console.log("This ran");
   // Wipes existing selectedItems array
   productsContainer.innerHTML = products
     .map(
@@ -48,6 +49,9 @@ function displayProducts(products) {
     item.id =
       item.querySelector("img").alt.replaceAll(" ", "").replaceAll("&", "") +
       "Card";
+    // Updates highlights for any items that have been selected
+    updateActivation(`${item.querySelector("img").alt}`);
+    console.log("updateActivation ran");
   });
 
   // Adds event listeners to each product on page
@@ -65,10 +69,12 @@ function toggleItem(item) {
   if (selectedItems.includes(itemName)) {
     selectedItems = selectedItems.filter((item) => item !== itemName);
     removeFromSelectedProducts(itemName);
+    updateActivation(itemName);
     saveSelectionsToStorage(); // Saves now modified selection list to storage
   } else {
     selectedItems.push(itemName);
     addToSelectedProducts(itemName);
+    updateActivation(itemName);
     saveSelectionsToStorage(); // Saves now modified selection list to storage
   }
 }
@@ -98,6 +104,7 @@ function removeFromSelectedProducts(itemName) {
     .querySelector(`#${itemName.replaceAll(" ", "").replaceAll("&", "")}`)
     .remove();
   selectedItems = selectedItems.filter((item) => item !== itemName);
+  updateActivation(itemName);
   saveSelectionsToStorage();
 }
 
@@ -112,6 +119,7 @@ function loadSelectionsFromStorage() {
     selectedItems = itemList;
     selectedItems.forEach((item) => {
       addToSelectedProducts(item);
+      updateActivation(item);
     });
   }
 }
@@ -200,7 +208,6 @@ const userInput = document.getElementById("userInput");
 generateRoutineBtn.addEventListener("click", async (e) => {
   e.preventDefault();
   if (selectedItems.length === 0) {
-    console.log("No items selected");
     if (!document.getElementById("alert-div")) {
       displaySelectItemsAlert(); // Lets user know to pick some items for a routine to generate
     }
@@ -340,6 +347,20 @@ function displayReply(text) {
   replyDiv.appendChild(replyText);
   chatWindow.appendChild(replyDiv);
   scrollUX();
+}
+
+// Uses the standard alt text as arg
+function updateActivation(itemName) {
+  const itemDiv = document.getElementById(
+    `${itemName.replaceAll(" ", "").replaceAll("&", "") + "Card"}`
+  );
+  if (itemDiv) {
+    if (selectedItems.includes(itemName)) {
+      itemDiv.classList.add("activated");
+    } else {
+      itemDiv.classList.remove("activated");
+    }
+  }
 }
 
 // Grabs any previously selected items and/or category
